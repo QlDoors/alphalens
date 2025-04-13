@@ -195,8 +195,8 @@ def factor_weights(factor_data,
     grouper = [factor_data.index.get_level_values('date')]
     if group_adjust:
         grouper.append('group')
-
-    weights = factor_data.groupby(grouper)['factor'] \
+    # NOTE:pandas高版本需要设置group_keys=False
+    weights = factor_data.groupby(grouper,group_keys=False)['factor'] \
         .apply(to_weights, demeaned, equal_weight)
 
     if group_adjust:

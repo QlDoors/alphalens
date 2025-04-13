@@ -22,6 +22,8 @@ from IPython.display import display
 from pandas.tseries.offsets import CustomBusinessDay, Day, BusinessDay
 from scipy.stats import mode
 
+class InfoWarning(UserWarning):
+    pass
 
 class NonMatchingTimezoneError(Exception):
     pass
@@ -163,7 +165,7 @@ def quantize_factor(factor_data,
     if by_group:
         grouper.append('group')
 
-    factor_quantile = factor_data.groupby(grouper)['factor'] \
+    factor_quantile = factor_data.groupby(grouper,group_keys=False)['factor'] \
         .apply(quantile_calc, quantiles, bins, zero_aware, no_raise)
     factor_quantile.name = 'factor_quantile'
 
@@ -316,7 +318,8 @@ def compute_forward_returns(factor,
             period_len = diff_custom_calendar_timedeltas(start, end, freq)
             days_diffs.append(period_len.components.days)
 
-        delta_days = period_len.components.days - mode(days_diffs).mode[0]
+        # UPDATE to mode(days_diffs).mode[0]
+        delta_days = period_len.components.days - mode(days_diffs,keepdims=False).mode
         period_len -= pd.Timedelta(days=delta_days)
         label = timedelta_to_string(period_len)
 
@@ -648,10 +651,15 @@ def get_clean_factor(factor,
     fwdret_loss = (initial_amount - fwdret_amount) / initial_amount
     bin_loss = tot_loss - fwdret_loss
 
-    print("Dropped %.1f%% entries from factor data: %.1f%% in forward "
+    warnings.warn("Dropped %.1f%% entries from factor data: %.1f%% in forward "
           "returns computation and %.1f%% in binning phase "
           "(set max_loss=0 to see potentially suppressed Exceptions)." %
-          (tot_loss * 100, fwdret_loss * 100, bin_loss * 100))
+          (tot_loss * 100, fwdret_loss * 100, bin_loss * 100),InfoWarning)
+    
+    # print("Dropped %.1f%% entries from factor data: %.1f%% in forward "
+    #       "returns computation and %.1f%% in binning phase "
+    #       "(set max_loss=0 to see potentially suppressed Exceptions)." %
+    #       (tot_loss * 100, fwdret_loss * 100, bin_loss * 100))
 
     if tot_loss > max_loss:
         message = ("max_loss (%.1f%%) exceeded %.1f%%, consider increasing it."
