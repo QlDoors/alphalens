@@ -202,6 +202,12 @@ def factor_weights(factor_data,
     if group_adjust:
         weights = weights.groupby(level='date').apply(to_weights, False, False)
 
+    # 修复索引名称
+    if len(weights.index.names) == 3 and weights.index.names.count('date') > 1:
+        new_names = list(weights.index.names)
+        new_names[1] = 'end_date'  # 将第二个date改为更有意义的名称
+        weights.index.names = new_names
+
     return weights
 
 
