@@ -181,6 +181,9 @@ class TearsNpTestCase(TestCase):
                                         quantiles,
                                         periods,
                                         filter_zscore):
+        """
+        Test no exceptions are thrown
+        """
         factor_data = get_clean_factor_and_forward_returns(
             self.factor,
             self.prices,
@@ -189,22 +192,18 @@ class TearsNpTestCase(TestCase):
             filter_zscore=filter_zscore)
         create_information_tear_sheet(factor_data, group_neutral=False, by_group=False)
 
-    def test_create_information_tear_sheet(self):
-        """
-        Test no exceptions are thrown
-        """
+    def test_create_information_tear_sheet0(self):
         print(f'factor: {self.factor.shape}')
         print(self.factor)
         print(f'prices: {self.prices.shape}')
         print(self.prices)
 
-        print('create information tear sheet 0.')
         quantiles = 1
         periods = (1, 5, 10)
         filter_zscore = None
         self.__create_information_tear_sheet(quantiles, periods, filter_zscore)
 
-        print('create information tear sheet 1.')
+    def test_create_information_tear_sheet1(self):
         quantiles = 4
         periods = (1, 2, 3, 7)
         filter_zscore = 20
@@ -227,10 +226,16 @@ class TearsNpTestCase(TestCase):
             filter_zscore=filter_zscore)
         create_turnover_tear_sheet(factor_data, turnover_periods)
 
-    def test_create_turnover_tear_sheet(self):
+    def test_create_turnover_tear_sheet0(self):
         self.__create_turnover_tear_sheet(2, (2, 3, 6), None, 20)
+
+    def test_create_turnover_tear_sheet1(self):
         self.__create_turnover_tear_sheet(4, (1, 2, 3, 7), None, None)
+
+    def test_create_turnover_tear_sheet2(self):
         self.__create_turnover_tear_sheet(2, (2, 3, 6), ['1D', '2D'], 20)
+
+    def test_create_turnover_tear_sheet3(self):
         self.__create_turnover_tear_sheet(4, (1, 2, 3, 7), ['1D'], 20)
 
     def __create_summary_tear_sheet(
@@ -253,8 +258,10 @@ class TearsNpTestCase(TestCase):
         create_summary_tear_sheet(
             factor_data, long_short=False, group_neutral=False)
 
-    def test_create_summary_tear_sheet(self):
+    def test_create_summary_tear_sheet0(self):
         self.__create_summary_tear_sheet(2, (1, 5, 10), None)
+
+    def test_create_summary_tear_sheet1(self):
         self.__create_summary_tear_sheet(3, (1, 2, 3, 7), 20)
 
     def __create_full_tear_sheet(
@@ -339,13 +346,7 @@ class TearsNpTestCase(TestCase):
     def test_create_event_returns_tear_sheet3(self):
         self.__create_event_returns_tear_sheet(1, (2, 3, 6, 9), 20, 'US/Eastern')
 
-    @parameterized.expand([((6, 8), None, None),
-                           ((6, 8), None, None),
-                           ((6, 3), 20, None),
-                           ((6, 3), 20, 'US/Eastern'),
-                           ((0, 3), None, None),
-                           ((3, 0), 20, 'US/Eastern')])
-    def test_create_event_study_tear_sheet(
+    def __create_event_study_tear_sheet(
             self, avgretplot, filter_zscore, tz):
         """
         Test no exceptions are thrown
@@ -355,8 +356,30 @@ class TearsNpTestCase(TestCase):
                                                                factor,
                                                                tz)
             factor_data = get_clean_factor_and_forward_returns(
-                factor, prices, bins=1, quantiles=None, periods=(
-                    1, 2), filter_zscore=filter_zscore)
+                factor, prices, bins=1, quantiles=None, periods=(1, 2), filter_zscore=filter_zscore)
 
-            create_event_study_tear_sheet(
-                factor_data, prices, avgretplot=avgretplot)
+            create_event_study_tear_sheet(factor_data, prices, avgretplot=avgretplot)
+
+    # @parameterized.expand([((6, 8), None, None),
+    #                        ((6, 8), None, None),
+    #                        ((6, 3), 20, None),
+    #                        ((6, 3), 20, 'US/Eastern'),
+    #                        ((0, 3), None, None),
+    #                        ((3, 0), 20, 'US/Eastern')])
+    def test_create_event_study_tear_sheet0(self):
+        self.__create_event_study_tear_sheet((6, 8), None, None)
+
+    def test_create_event_study_tear_sheet1(self):
+        self.__create_event_study_tear_sheet((6, 8), None, 'US/Eastern')
+
+    def test_create_event_study_tear_sheet2(self):
+        self.__create_event_study_tear_sheet((6, 3), 20, None)
+
+    def test_create_event_study_tear_sheet3(self):
+        self.__create_event_study_tear_sheet((6, 3), 20, 'US/Eastern')
+
+    def test_create_event_study_tear_sheet4(self):
+        self.__create_event_study_tear_sheet((0, 3), None, None)
+
+    def test_create_event_study_tear_sheet5(self):
+        self.__create_event_study_tear_sheet((3, 0), 20, 'US/Eastern')
