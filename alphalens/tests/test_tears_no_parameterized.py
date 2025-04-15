@@ -360,12 +360,6 @@ class TearsNpTestCase(TestCase):
 
             create_event_study_tear_sheet(factor_data, prices, avgretplot=avgretplot)
 
-    # @parameterized.expand([((6, 8), None, None),
-    #                        ((6, 8), None, None),
-    #                        ((6, 3), 20, None),
-    #                        ((6, 3), 20, 'US/Eastern'),
-    #                        ((0, 3), None, None),
-    #                        ((3, 0), 20, 'US/Eastern')])
     def test_create_event_study_tear_sheet0(self):
         self.__create_event_study_tear_sheet((6, 8), None, None)
 
