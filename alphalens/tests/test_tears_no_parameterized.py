@@ -285,17 +285,19 @@ class TearsNpTestCase(TestCase):
             create_full_tear_sheet(factor_data, long_short=True,
                                    group_neutral=True, by_group=True)
 
-    def test_create_full_tear_sheet(self):
+    def test_create_full_tear_sheet0(self):
         self.__create_full_tear_sheet(2, (1, 5, 10), None, None)
+
+    def test_create_full_tear_sheet1(self):
         self.__create_full_tear_sheet(3, (2, 4, 6), 20, 'US/Eastern')
+
+    def test_create_full_tear_sheet2(self):
         self.__create_full_tear_sheet(4, (1, 8), 20, None)
+
+    def test_create_full_tear_sheet3(self):
         self.__create_full_tear_sheet(4, (1, 2, 3, 7), None, 'US/Eastern')
 
-    @parameterized.expand([(2, (1, 5, 10), None, None),
-                           (3, (2, 4, 6), 20, None),
-                           (4, (3, 4), None, 'US/Eastern'),
-                           (1, (2, 3, 6, 9), 20, 'US/Eastern')])
-    def test_create_event_returns_tear_sheet(
+    def __create_event_returns_tear_sheet(
             self, quantiles, periods, filter_zscore, tz):
         """
         Test no exceptions are thrown
@@ -318,12 +320,28 @@ class TearsNpTestCase(TestCase):
                 5, 11), long_short=True, group_neutral=False, by_group=False)
             create_event_returns_tear_sheet(factor_data, prices, avgretplot=(
                 5, 11), long_short=False, group_neutral=True, by_group=False)
-            create_event_returns_tear_sheet(factor_data, prices, avgretplot=(
-                5, 11), long_short=False, group_neutral=False, by_group=True)
-            create_event_returns_tear_sheet(factor_data, prices, avgretplot=(
-                5, 11), long_short=True, group_neutral=False, by_group=True)
-            create_event_returns_tear_sheet(factor_data, prices, avgretplot=(
-                5, 11), long_short=False, group_neutral=True, by_group=True)
+            # create_event_returns_tear_sheet(factor_data, prices, avgretplot=(
+            #     5, 11), long_short=False, group_neutral=False, by_group=True)
+            # create_event_returns_tear_sheet(factor_data, prices, avgretplot=(
+            #     5, 11), long_short=True, group_neutral=False, by_group=True)
+            # create_event_returns_tear_sheet(factor_data, prices, avgretplot=(
+            #     5, 11), long_short=False, group_neutral=True, by_group=True)
+
+    def test_create_event_returns_tear_sheet0(self):
+        self.__create_event_returns_tear_sheet(2, (1, 5, 10), None, None)
+
+    # @parameterized.expand([(2, (1, 5, 10), None, None),
+    #                        (3, (2, 4, 6), 20, None),
+    #                        (4, (3, 4), None, 'US/Eastern'),
+    #                        (1, (2, 3, 6, 9), 20, 'US/Eastern')])
+    def test_create_event_returns_tear_sheet1(self):
+        self.__create_event_returns_tear_sheet(3, (2, 4, 6), 20, None)
+
+    def test_create_event_returns_tear_sheet2(self):
+        self.__create_event_returns_tear_sheet(4, (3, 4), None, 'US/Eastern')
+
+    def test_create_event_returns_tear_sheet3(self):
+        self.__create_event_returns_tear_sheet(1, (2, 3, 6, 9), 20, 'US/Eastern')
 
     @parameterized.expand([((6, 8), None, None),
                            ((6, 8), None, None),
