@@ -318,9 +318,17 @@ class TearsTestCase(TestCase):
             prices, factor = self.__localize_prices_and_factor(prices,
                                                                factor,
                                                                tz)
-            factor_data = get_clean_factor_and_forward_returns(
+            if tz:
+                with self.assertRaises(ValueError) as cm:
+                    factor_data = get_clean_factor_and_forward_returns(
+                        factor, prices, bins=1, quantiles=None, periods=(
+                            1, 2), filter_zscore=filter_zscore)
+                    create_event_study_tear_sheet(
+                        factor_data, prices, avgretplot=avgretplot)
+                print(f'cm.exception: {cm.exception}')
+            else:
+                factor_data = get_clean_factor_and_forward_returns(
                 factor, prices, bins=1, quantiles=None, periods=(
                     1, 2), filter_zscore=filter_zscore)
-
-            create_event_study_tear_sheet(
-                factor_data, prices, avgretplot=avgretplot)
+                create_event_study_tear_sheet(
+                    factor_data, prices, avgretplot=avgretplot)
