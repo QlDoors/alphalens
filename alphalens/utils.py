@@ -340,8 +340,7 @@ def compute_forward_returns(factor,
     # now set the columns correctly
     df = df[column_list]
 
-    if freq is not None and df.index.levels[0].inferred_freq is not None:
-        df.index.levels[0].freq = freq
+    df.index.levels[0].freq = freq
     df.index.set_names(['date', 'asset'], inplace=True)
 
     return df

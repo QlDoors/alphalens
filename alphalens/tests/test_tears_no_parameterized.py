@@ -15,7 +15,6 @@
 
 from __future__ import division
 from unittest import TestCase
-from parameterized import parameterized
 from numpy import nan
 from pandas import (DataFrame, date_range, Timedelta, concat)
 
@@ -364,16 +363,25 @@ class TearsNpTestCase(TestCase):
         self.__create_event_study_tear_sheet((6, 8), None, None)
 
     def test_create_event_study_tear_sheet1(self):
-        self.__create_event_study_tear_sheet((6, 8), None, 'US/Eastern')
+        with self.assertRaises(ValueError) as cm:
+            self.__create_event_study_tear_sheet((6, 8), None, 'US/Eastern')
+        self.assertEqual(str(cm.exception),
+                         'Inferred frequency None from passed values does not conform to passed frequency C')
 
     def test_create_event_study_tear_sheet2(self):
         self.__create_event_study_tear_sheet((6, 3), 20, None)
 
     def test_create_event_study_tear_sheet3(self):
-        self.__create_event_study_tear_sheet((6, 3), 20, 'US/Eastern')
+        with self.assertRaises(ValueError) as cm:
+            self.__create_event_study_tear_sheet((6, 3), 20, 'US/Eastern')
+        self.assertEqual(str(cm.exception),
+                         'Inferred frequency None from passed values does not conform to passed frequency C')
 
     def test_create_event_study_tear_sheet4(self):
         self.__create_event_study_tear_sheet((0, 3), None, None)
 
     def test_create_event_study_tear_sheet5(self):
-        self.__create_event_study_tear_sheet((3, 0), 20, 'US/Eastern')
+        with self.assertRaises(ValueError) as cm:
+            self.__create_event_study_tear_sheet((3, 0), 20, 'US/Eastern')
+        self.assertEqual(str(cm.exception),
+                         'Inferred frequency None from passed values does not conform to passed frequency C')
