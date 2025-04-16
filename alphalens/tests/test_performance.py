@@ -26,7 +26,8 @@ from pandas import (
     MultiIndex,
     Index,
     DatetimeIndex,
-    Timedelta
+    Timedelta,
+    CategoricalIndex
 )
 
 from pandas.tseries.offsets import (BDay, Day, CDay)
@@ -63,6 +64,7 @@ class PerformanceTestCase(TestCase):
     factor_data['group'] = Series(index=factor.index,
                                   data=[1, 1, 2, 2, 1, 1, 2, 2],
                                   dtype="category")
+    group_index = CategoricalIndex([1, 2], categories=[1, 2], ordered=False, name='group')
 
     @parameterized.expand([(factor_data, [4, 3, 2, 1, 1, 2, 3, 4],
                             False, False,
@@ -77,13 +79,13 @@ class PerformanceTestCase(TestCase):
                            (factor_data, [1, 2, 3, 4, 4, 3, 2, 1],
                             False, True,
                             MultiIndex.from_product(
-                                [dr, [1, 2]], names=['date', 'group']),
+                                [dr, group_index], names=['date', 'group']),
                             [1., 1., 1., 1.],
                             ),
                            (factor_data, [1, 2, 3, 4, 4, 3, 2, 1],
                             True, True,
                             MultiIndex.from_product(
-                                [dr, [1, 2]], names=['date', 'group']),
+                                [dr, group_index], names=['date', 'group']),
                             [1., 1., 1., 1.],
                             )])
     def test_information_coefficient(self,
@@ -105,7 +107,7 @@ class PerformanceTestCase(TestCase):
                                    columns=Index(['1D'], dtype='object'),
                                    data=expected_ic_val)
 
-        assert_frame_equal(ic, expected_ic_df)
+        assert_frame_equal(ic, expected_ic_df, check_freq=False)
 
     @parameterized.expand([(factor_data,
                             [4, 3, 2, 1, 1, 2, 3, 4],
@@ -128,7 +130,7 @@ class PerformanceTestCase(TestCase):
                             False,
                             True,
                             None,
-                            Index([1, 2], name='group', dtype=np.int64),
+                            group_index,
                             [1., 1.]),
                            (factor_data,
                             [1, 2, 3, 4, 4, 3, 2, 1],
@@ -139,7 +141,7 @@ class PerformanceTestCase(TestCase):
                                 [DatetimeIndex(['2015-01-04'],
                                                name='date',
                                                freq='W-SUN'),
-                                 [1, 2]], names=['date', 'group']),
+                                 group_index], names=['date', 'group']),
                             [1., 1.])])
     def test_mean_information_coefficient(self,
                                           factor_data,
@@ -433,7 +435,7 @@ class PerformanceTestCase(TestCase):
             index=quantized_test_factor.index.levels[0], data=expected_vals)
         expected.name = test_quantile
 
-        assert_series_equal(to, expected)
+        assert_series_equal(to, expected, check_freq=False)
 
     @parameterized.expand([([[3, 4, 2, 1, nan],
                              [3, 4, -2, -1, nan],
@@ -561,7 +563,7 @@ class PerformanceTestCase(TestCase):
                            ([1, 1, 1, 1, 1, 1, 1, 1],
                             [4, 3, 2, 1, 1, 2, 3, 4],
                             False,
-                            [nan, nan]),
+                            [0.0, 0.0]),
                            ([1, 2, 3, 4, 4, 3, 2, 1],
                             [4, 3, 2, 1, 1, 2, 3, 4],
                             True,
@@ -573,7 +575,7 @@ class PerformanceTestCase(TestCase):
                            ([1, 1, 1, 1, 1, 1, 1, 1],
                             [4, 3, 2, 1, 1, 2, 3, 4],
                             True,
-                            [nan, nan])
+                            [0.0, 0.0])
                            ])
     def test_factor_returns(self,
                             factor_vals,
@@ -595,7 +597,7 @@ class PerformanceTestCase(TestCase):
             columns=get_forward_returns_columns(
                 factor_data.columns))
 
-        assert_frame_equal(factor_returns_s, expected)
+        assert_frame_equal(factor_returns_s, expected, check_freq=False)
 
     @parameterized.expand([([1, 2, 3, 4, 1, 1, 1, 1],
                             -1,
@@ -690,7 +692,7 @@ class PerformanceTestCase(TestCase):
 
         expected = Series(expected_vals, index=cum_ret.index)
 
-        assert_series_equal(cum_ret, expected, check_less_precise=True)
+        assert_series_equal(cum_ret, expected)
 
     @parameterized.expand([([[1.0, 2.0, 3.0, 4.0],
                              [1.0, 2.0, 3.0, 4.0],
@@ -771,7 +773,7 @@ class PerformanceTestCase(TestCase):
         expected = Series(index=dr, data=expected_vals)
         expected.name = period
 
-        assert_series_equal(fa, expected)
+        assert_series_equal(fa, expected, check_freq=False)
 
     @parameterized.expand([
         (

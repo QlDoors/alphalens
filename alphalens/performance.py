@@ -200,13 +200,7 @@ def factor_weights(factor_data,
         .apply(to_weights, demeaned, equal_weight)
 
     if group_adjust:
-        weights = weights.groupby(level='date').apply(to_weights, False, False)
-
-    # 修复索引名称
-    if len(weights.index.names) == 3 and weights.index.names.count('date') > 1:
-        new_names = list(weights.index.names)
-        new_names[1] = 'end_date'  # 将第二个date改为更有意义的名称
-        weights.index.names = new_names
+        weights = weights.groupby(level='date', group_keys=False).apply(to_weights, False, False)
 
     return weights
 
@@ -731,7 +725,10 @@ def common_start_returns(factor,
 
         all_returns.append(series)
 
-    return pd.concat(all_returns, axis=1)
+    result = pd.concat(all_returns, axis=1)
+    # Ensure the result is sorted by index
+    result = result.sort_index()
+    return result
 
 
 def average_cumulative_return_by_quantile(factor_data,
