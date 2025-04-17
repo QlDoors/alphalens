@@ -725,9 +725,8 @@ def common_start_returns(factor,
 
         all_returns.append(series)
 
-    result = pd.concat(all_returns, axis=1)
     # Ensure the result is sorted by index
-    result = result.sort_index()
+    result = pd.concat(all_returns, axis=1, sort=True)
     return result
 
 
